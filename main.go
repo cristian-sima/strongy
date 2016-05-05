@@ -2,11 +2,7 @@ package strongy
 
 import (
 	"bytes"
-	"crypto/md5"
 	"crypto/rand"
-	"crypto/sha256"
-	"crypto/sha512"
-	"fmt"
 	"log"
 	"regexp"
 )
@@ -54,7 +50,6 @@ type Password struct {
 	ContainsLower   bool
 	ContainsNumber  bool
 	ContainsSpecial bool
-	DictionaryBased bool
 }
 
 // SaltConf is the salt
@@ -103,57 +98,6 @@ func getRandomBytes(length int) []byte {
 		log.Fatalf("%v\n", err)
 	}
 	return randomData
-}
-
-// MD5 sum for the given password.  If a SaltConf
-// pointer is given as a parameter a salt with the given
-// length will be returned with it included in the hash.
-func (p *Password) MD5(saltConf ...*SaltConf) ([16]byte, []byte) {
-	if len(saltConf) > 0 {
-		var saltLength int
-
-		for _, i := range saltConf[0:] {
-			saltLength = i.Length
-		}
-
-		salt := getRandomBytes(saltLength)
-		return md5.Sum([]byte(fmt.Sprintf("%s%x", p.Pass, salt))), salt
-	}
-	return md5.Sum([]byte(p.Pass)), nil
-}
-
-// SHA256 sum for the given password.  If a SaltConf
-// pointer is given as a parameter a salt with the given
-// length will be returned with it included in the hash.
-func (p *Password) SHA256(saltConf ...*SaltConf) ([32]byte, []byte) {
-	if len(saltConf) > 0 {
-		var saltLength int
-
-		for _, i := range saltConf[0:] {
-			saltLength = i.Length
-		}
-
-		salt := getRandomBytes(saltLength)
-		return sha256.Sum256([]byte(fmt.Sprintf("%s%x", p.Pass, salt))), salt
-	}
-	return sha256.Sum256([]byte(p.Pass)), nil
-}
-
-// SHA512 sum for the given password.  If a SaltConf
-// pointer is given as a parameter a salt with the given
-// length will be returned with it included in the hash.
-func (p *Password) SHA512(saltConf ...*SaltConf) ([64]byte, []byte) {
-	if len(saltConf) > 0 {
-		var saltLength int
-
-		for _, i := range saltConf[0:] {
-			saltLength = i.Length
-		}
-
-		salt := getRandomBytes(saltLength)
-		return sha512.Sum512([]byte(fmt.Sprintf("%s%x", p.Pass, salt))), salt
-	}
-	return sha512.Sum512([]byte(p.Pass)), nil
 }
 
 // GetLength will provide the length of the password.  This method is
@@ -220,10 +164,4 @@ func (p *Password) HasSpecial() bool {
 // ComplexityRating provides the rating for the password.
 func (p *Password) ComplexityRating() Power {
 	return Power(p.Score)
-}
-
-// InDictionary will return true or false if it's been detected
-// that the given password is a dictionary based.
-func (p *Password) InDictionary() bool {
-	return p.DictionaryBased
 }
