@@ -3,7 +3,6 @@ package strongy
 import (
 	"bytes"
 	"crypto/rand"
-	"log"
 	"regexp"
 )
 
@@ -95,7 +94,7 @@ func GenerateVeryStrongPassword(length int) *Password {
 func getRandomBytes(length int) []byte {
 	randomData := make([]byte, length)
 	if _, err := rand.Read(randomData); err != nil {
-		log.Fatalf("%v\n", err)
+		panic(err)
 	}
 	return randomData
 }
@@ -114,8 +113,8 @@ func (p *Password) ProcessPassword() {
 	matchNumber := regexp.MustCompile(`[0-9]`)
 	matchSpecial := regexp.MustCompile(`[\!\@\#\$\%\^\&\*\(\\\)\-_\=\+\,\.\?\/\:\;\{\}\[\]~]`)
 
-	if p.Length < 8 {
-		log.Fatalln("password isn't long enough for evaluation")
+	if p.Length > 8 {
+		p.Score--
 	}
 
 	if matchLower.MatchString(p.Pass) {
