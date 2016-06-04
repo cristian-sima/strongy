@@ -44,7 +44,7 @@ func (power Power) String() string {
 type Password struct {
 	Pass            string
 	Length          int
-	Score           int
+	score           int
 	ContainsUpper   bool
 	ContainsLower   bool
 	ContainsNumber  bool
@@ -83,7 +83,7 @@ func GenerateVeryStrongPassword(length int) *Password {
 	for {
 		p := GeneratePassword(length)
 		p.ProcessPassword()
-		if p.Score == 4 {
+		if p.score == 4 {
 			return p
 		}
 	}
@@ -113,54 +113,32 @@ func (p *Password) ProcessPassword() {
 	matchNumber := regexp.MustCompile(`[0-9]`)
 	matchSpecial := regexp.MustCompile(`[\!\@\#\$\%\^\&\*\(\\\)\-_\=\+\,\.\?\/\:\;\{\}\[\]~]`)
 
-	if p.Length > 8 {
-		p.Score--
-	}
-
-	if matchLower.MatchString(p.Pass) {
-		p.ContainsLower = true
-		p.Score++
-	}
-	if matchUpper.MatchString(p.Pass) {
-		p.ContainsUpper = true
-		p.Score++
-	}
-	if matchNumber.MatchString(p.Pass) {
-		p.ContainsNumber = true
-		p.Score++
-	}
-	if matchSpecial.MatchString(p.Pass) {
-		p.ContainsSpecial = true
-		p.Score++
+	if p.Length > 6 {
+		if matchLower.MatchString(p.Pass) {
+			p.ContainsLower = true
+			p.score++
+		}
+		if matchUpper.MatchString(p.Pass) {
+			p.ContainsUpper = true
+			p.score++
+		}
+		if matchNumber.MatchString(p.Pass) {
+			p.ContainsNumber = true
+			p.score++
+		}
+		if matchSpecial.MatchString(p.Pass) {
+			p.ContainsSpecial = true
+			p.score++
+		}
 	}
 }
 
-// GetScore will provide the score of the password.
-func (p *Password) GetScore() int {
-	return p.Score
+// Getscore will provide the score of the password.
+func (p *Password) Getscore() int {
+	return p.score
 }
 
-// HasUpper indicates whether the password contains an upper case letter.
-func (p *Password) HasUpper() bool {
-	return p.ContainsUpper
-}
-
-// HasLower indicates whether the password contains a lower case letter.
-func (p *Password) HasLower() bool {
-	return p.ContainsLower
-}
-
-// HasNumber indicates whether the password contains a number.
-func (p *Password) HasNumber() bool {
-	return p.ContainsNumber
-}
-
-// HasSpecial indicates whether the password contains a special character.
-func (p *Password) HasSpecial() bool {
-	return p.ContainsSpecial
-}
-
-// ComplexityRating provides the rating for the password.
-func (p *Password) ComplexityRating() Power {
-	return Power(p.Score)
+// Power provides the rating for the password.
+func (p *Password) Power() Power {
+	return Power(p.score)
 }
