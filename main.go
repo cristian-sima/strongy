@@ -109,16 +109,12 @@ func (p *Password) GetLength() int {
 // ProcessPassword will parse the password and populate the Password struct attributes.
 func (p *Password) ProcessPassword() {
 	
-	const (
-		defaultPassword = "P@r0la_m3A"
-		)
-	
 	matchLower := regexp.MustCompile(`[a-z]`)
 	matchUpper := regexp.MustCompile(`[A-Z]`)
 	matchNumber := regexp.MustCompile(`[0-9]`)
 	matchSpecial := regexp.MustCompile(`[\!\@\#\$\%\^\&\*\(\\\)\-_\=\+\,\.\?\/\:\;\{\}\[\]~]`)
 	
-	if p.Pass != defaultPassword && p.Length > 6 {
+	if p.Length > 6 {
 		if matchLower.MatchString(p.Pass) {
 			p.ContainsLower = true
 			p.score++
